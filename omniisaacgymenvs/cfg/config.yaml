@@ -47,12 +47,13 @@ enable_livestream: False
 # timeout for MT script
 mt_timeout: 300
 
+#---------- For recording by video ----------
 # enables viewport recording
-enable_recording: False
+enable_recording: True
 # interval between video recordings (in steps)
-recording_interval: 2000
+recording_interval: 100
 # length of the recorded video (in steps)
-recording_length: 100
+recording_length: 500
 # fps for writing recorded video
 recording_fps: 30
 # directory to save recordings in
