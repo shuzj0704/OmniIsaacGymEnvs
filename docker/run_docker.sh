@@ -13,3 +13,5 @@ nvcr.io/nvidia/isaac-sim:2023.1.1
 
 docker exec -it isaac-sim-oige sh -c "cd /workspace/omniisaacgymenvs && /isaac-sim/python.sh -m pip install -e . && cd omniisaacgymenvs"
 docker exec -it -w /workspace/omniisaacgymenvs/omniisaacgymenvs isaac-sim-oige bash
+
+## --rm: delete the container when close is

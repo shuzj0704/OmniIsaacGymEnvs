@@ -46,8 +46,8 @@ from rl_games.torch_runner import Runner
 
 class RLGTrainer:
     def __init__(self, cfg, cfg_dict):
-        self.cfg = cfg
-        self.cfg_dict = cfg_dict
+        self.cfg = cfg  # configuration
+        self.cfg_dict = cfg_dict    # a dictionary representation of the configuration
 
     def launch_rlg_hydra(self, env):
         # `create_rlgpu_env` is environment construction function which is passed to RL Games and called internally.
@@ -61,6 +61,7 @@ class RLGTrainer:
         self.rlg_config_dict = omegaconf_to_dict(self.cfg.train)
 
     def run(self, module_path, experiment_dir):
+        # sets the training directory
         self.rlg_config_dict["params"]["config"]["train_dir"] = os.path.join(module_path, "runs")
 
         # create runner and set the settings
@@ -68,7 +69,7 @@ class RLGTrainer:
         runner.load(self.rlg_config_dict)
         runner.reset()
 
-        # dump config dict
+        # dump config dict (loads the configuration into the runner)
         os.makedirs(experiment_dir, exist_ok=True)
         with open(os.path.join(experiment_dir, "config.yaml"), "w") as f:
             f.write(OmegaConf.to_yaml(self.cfg))
@@ -79,6 +80,7 @@ class RLGTrainer:
 
 
 @hydra.main(version_base=None, config_name="config", config_path="../cfg")
+# tells Hydra to treat this function as the entry point of the application.
 def parse_hydra_configs(cfg: DictConfig):
 
     time_str = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -106,10 +108,11 @@ def parse_hydra_configs(cfg: DictConfig):
     )
 
     # parse experiment directory
-    module_path = os.path.abspath(os.path.join(os.path.dirname(omniisaacgymenvs.__file__)))
-    experiment_dir = os.path.join(module_path, "runs", cfg.train.params.config.name)
+    module_path = os.path.abspath(os.path.join(os.path.dirname(omniisaacgymenvs.__file__)))   # locations of the module
+    experiment_dir = os.path.join(module_path, "runs", cfg.train.params.config.name)    # experiment directory
 
     # use gym RecordVideo wrapper for viewport recording
+    # the parameters is in: OmniIsaacGymEnvs/omniisaacgymenvs/cfg/config.yaml
     if cfg.enable_recording:
         if cfg.recording_dir == '':
             videos_dir = os.path.join(experiment_dir, "videos")
@@ -163,7 +166,7 @@ def parse_hydra_configs(cfg: DictConfig):
     torch.cuda.set_device(local_rank)
     rlg_trainer = RLGTrainer(cfg, cfg_dict)
     rlg_trainer.launch_rlg_hydra(env)
-    rlg_trainer.run(module_path, experiment_dir)
+    rlg_trainer.run(module_path, experiment_dir)    # start the reinforcement learning task
     env.close()
 
     if cfg.wandb_activate and global_rank == 0:
